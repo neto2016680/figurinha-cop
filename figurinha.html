@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Minha Figurinha da Copa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f4f4f4;
+    }
+    .figurinha {
+      position: relative;
+      width: 300px;
+      height: 420px;
+      margin: 20px auto;
+      border: 4px solid gold;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.3);
+      overflow: hidden;
+    }
+    .normal {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #6a11cb 50%, #8e44ad 75%, #d4af37 100%);
+    }
+    .legend {
+      background: linear-gradient(135deg, #fff8dc 0%, #ffd700 25%, #daa520 50%, #b8860b 75%, #fffacd 100%);
+    }
+    .foto {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 3px solid #fff;
+    }
+    .bandeira {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 50px;
+      height: 35px;
+      border: 2px solid #fff;
+    }
+    .info {
+      position: absolute;
+      bottom: 25px;
+      width: 100%;
+      color: #fff;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px black;
+      font-size: 14px;
+    }
+    input[type="button"] {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: gold;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #baixar {
+      display: none;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+  <h2>Monte sua Figurinha da Copa!</h2>
+
+  <input type="file" accept="image/*" id="fotoInput" capture="user"><br><br>
+  <input type="text" id="nome" placeholder="Nome"><br><br>
+  <input type="date" id="nascimento"><br><br>
+
+  <!-- Seleção da bandeira -->
+  <label for="bandeira">Escolha a bandeira:</label><br>
+  <select id="bandeira">
+    <option value="">-- Nenhuma --</option>
+    <option value="https://flagcdn.com/w40/br.png">Brasil</option>
+    <option value="https://flagcdn.com/w40/ar.png">Argentina</option>
+    <option value="https://flagcdn.com/w40/uy.png">Uruguai</option>
+    <option value="https://flagcdn.com/w40/cl.png">Chile</option>
+    <option value="https://flagcdn.com/w40/py.png">Paraguai</option>
+    <option value="https://flagcdn.com/w40/bo.png">Bolívia</option>
+    <option value="https://flagcdn.com/w40/co.png">Colômbia</option>
+    <option value="https://flagcdn.com/w40/pe.png">Peru</option>
+    <option value="https://flagcdn.com/w40/ec.png">Equador</option>
+    <option value="https://flagcdn.com/w40/ve.png">Venezuela</option>
+    <option value="https://flagcdn.com/w40/mx.png">México</option>
+  </select><br><br>
+
+  <!-- Tipo da figurinha -->
+  <label for="tipo">Tipo da Figurinha:</label><br>
+  <select id="tipo">
+    <option value="normal">Normal</option>
+    <option value="legend">Legend</option>
+  </select><br><br>
+
+  <!-- Botões separados -->
+  <input type="button" value="Gerar Figurinha" onclick="gerarFigurinha()">
+  <input type="button" id="baixar" value="Baixar Figurinha" onclick="baixarFigurinha()">
+
+  <!-- Área da figurinha -->
+  <div class="figurinha normal" id="figurinha" style="display:none;">
+    <img id="fotoPreview" class="foto" alt="Sua Foto">
+    <img id="bandeiraPreview" class="bandeira" style="display:none;">
+    <div class="info" id="infoTexto"></div>
+  </div>
+
+  <script>
+    function gerarFigurinha() {
+      const fotoInput = document.getElementById("fotoInput").files[0];
+      const nome = document.getElementById("nome").value;
+      const nascimento = document.getElementById("nascimento").value;
+      const bandeira = document.getElementById("bandeira").value;
+      const tipo = document.getElementById("tipo").value;
+
+      if (!fotoInput) {
+        alert("Por favor, selecione uma foto!");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById("fotoPreview").src = e.target.result;
+        const figurinha = document.getElementById("figurinha");
+        figurinha.className = "figurinha " + tipo;
+        figurinha.style.display = "block";
+
+        // Texto
+        document.getElementById("infoTexto").innerHTML = nome + "<br>" + nascimento;
+
+        // Bandeira
+        const bandeiraPreview = document.getElementById("bandeiraPreview");
+        if (bandeira) {
+          bandeiraPreview.src = bandeira;
+          bandeiraPreview.style.display = "block";
+        } else {
+          bandeiraPreview.style.display = "none";
+        }
+
+        // Mostrar botão baixar
+        document.getElementById("baixar").style.display = "inline-block";
+      }
+      reader.readAsDataURL(fotoInput);
+    }
+
+    function baixarFigurinha() {
+      const figurinha = document.getElementById("figurinha");
+      html2canvas(figurinha).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "figurinha_copa.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>
